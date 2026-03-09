@@ -48,14 +48,14 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
       {/* Sign Up Card */}
       <div className="relative w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 flex flex-col items-center overflow-hidden">
         {/* Title with note icon */}
-        <h1 
-          className="text-3xl sm:text-5xl font-extrabold text-pink-600 mb-4 flex items-center justify-center gap-2"
-          style={{fontFamily:"Quicksand"}}
-        >
-          <img src={NoteIcon} alt="note" className="w-10 h-10" />
-          Nola
-        </h1>
-        <p className="text-center text-pink-400 mb-6 sm:mb-8 text-sm sm:text-base">Create your magical note account ✨</p>
+       <h1 
+  className="text-5xl font-extrabold text-pink-600 mb-4 flex items-center justify-center gap-2"
+  style={{fontFamily:"Quicksand"}}
+>
+  <img src={NoteIcon} alt="note" className="w-10 h-10" />
+  Nola
+</h1>
+<p className="text-center text-pink-400 mb-4 text-sm sm:text-base">Create your magical note account ✨</p>
 
         <form onSubmit={handleSignUp} className="w-full flex flex-col gap-3 sm:gap-5">
           {/* Username */}
@@ -144,22 +144,22 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
         </div>
 
         {/* Social signup buttons */}
-        <div className="flex justify-center gap-3 sm:gap-4 mb-4">
-          <button
-            type="button"
-            className="w-8 h-8 sm:w-10 sm:h-10 p-1 rounded-full border border-pink-300 hover:shadow-md transition-transform transform hover:scale-110"
-            onClick={() => alert("Google login coming soon!")}
-          >
-            <img src={GoogleIcon} alt="Google login" className="w-full h-full object-contain" />
-          </button>
-          <button
-            type="button"
-            className="w-8 h-8 sm:w-10 sm:h-10 p-1 rounded-full border border-pink-300 hover:shadow-md transition-transform transform hover:scale-110"
-            onClick={() => alert("Facebook login coming soon!")}
-          >
-            <img src={FacebookIcon} alt="Facebook login" className="w-full h-full object-contain" />
-          </button>
-        </div>
+       <div className="flex justify-center gap-3 sm:gap-4 mb-4">
+  <button
+    type="button"
+    className="w-8 h-8 sm:w-10 sm:h-10 p-1 rounded-full border border-pink-300 hover:shadow-md transition-transform transform hover:scale-110"
+    onClick={() => alert("Google login coming soon!")}
+  >
+    <img src={GoogleIcon} alt="Google login" className="w-full h-full object-contain" />
+  </button>
+  <button
+    type="button"
+    className="w-8 h-8 sm:w-10 sm:h-10 p-1 rounded-full border border-pink-300 hover:shadow-md transition-transform transform hover:scale-110"
+    onClick={() => alert("Facebook login coming soon!")}
+  >
+    <img src={FacebookIcon} alt="Facebook login" className="w-full h-full object-contain" />
+  </button>
+</div>
 
         <p className="text-center text-pink-400 mt-4 sm:mt-6 text-sm">
           Already have an account?{" "}
