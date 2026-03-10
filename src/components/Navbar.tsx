@@ -26,7 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
           </div>
 
           {/* Search */}
-          <div className="flex items-center bg-white text-gray-500 rounded-lg px-2 py-1 gap-2 shadow-sm">
+          <div className="flex items-center bg-white text-gray-500 rounded-lg px- py-1 gap-2 shadow-sm">
             <SearchIcon className="w-5 h-5" />
             <input
               type="text"
@@ -60,8 +60,8 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
           </div>
         </div>
 
-        {/* Mobile Navbar (keep your exact code) */}
-        <div className="md:hidden flex items-center justify-between w-full px-4md:hidden flex items-center justify-between w-full px-3 py-3 bg-pink-500 shadow-md">
+        {/* Mobile Navbar */}
+        <div className="md:hidden flex items-center justify-between w-full px-3 py-3 bg-pink-500 shadow-md">
           {/* Profile at left */}
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold">
@@ -72,10 +72,12 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
 
           {/* Spacer pushes icons to the right */}
           <div className="flex-1 flex justify-end items-center gap-4">
-            {/* Search & Notifications */}
+            {/* Search */}
             <button className="text-white">
               <SearchIcon className="w-6 h-6" />
             </button>
+
+            {/* Notifications */}
             <button className="relative text-white">
               <BellIcon className="w-6 h-6 hover:text-yellow-200 transition" />
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
@@ -90,9 +92,19 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
                 viewBox="0 0 24 24"
               >
                 {isOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
@@ -102,24 +114,6 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden px-4 pb-4 flex flex-col gap-3 bg-pink-500">
-            {/* Search */}
-            {/* <div className="flex items-center bg-white text-gray-500 rounded-lg px-2 py-1 gap-2 shadow-sm">
-              <SearchIcon className="w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="bg-transparent focus:outline-none text-gray-700 text-sm w-full"
-              />
-            </div> */}
-
-            {/* Notifications */}
-            {/* <button className="relative flex items-center justify-start gap-2 px-2 py-1 bg-white rounded-lg text-pink-500 font-medium hover:bg-pink-50 transition shadow-sm">
-              <BellIcon className="w-5 h-5" />
-              Notifications
-              <span className="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            </button> */}
-
-            {/* Login/Logout */}
             {isLoggedIn ? (
               <button
                 onClick={onLogout}
@@ -143,3 +137,4 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
 };
 
 export default Navbar;
+
