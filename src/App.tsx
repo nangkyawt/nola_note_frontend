@@ -15,30 +15,30 @@ const App: React.FC = () => {
   const [search, setSearch] = useState("");
 
   // Fetch notes
-useEffect(() => {
-  const fetchNotes = async () => {
-    try {
-      const res = await getNotes();
-      console.log("Notes from backend:", res.data);
-      setNotes(res.data); // <-- use color from backend directly
-    } catch (err) {
-      console.error("Failed to fetch notes:", err);
-    }
-  };
-  fetchNotes();
-}, []);
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const res = await getNotes();
+        console.log("Notes from backend:", res.data);
+        setNotes(res.data); // <-- use color from backend directly
+      } catch (err) {
+        console.error("Failed to fetch notes:", err);
+      }
+    };
+    fetchNotes();
+  }, []);
 
   // Add note
-const addNote = async (note: NewNote) => {
-  try {
-    const res = await createNote(note);  // <-- note contains color & emoji
-    console.log("Saved note:", res.data); // should now include color & emoji
-    setNotes((prev) => [res.data, ...prev]);
-    setShowNewNote(false);
-  } catch (err) {
-    console.error("Error adding note:", err);
-  }
-};
+  const addNote = async (note: NewNote) => {
+    try {
+      const res = await createNote(note);  // <-- note contains color & emoji
+      console.log("Saved note:", res.data); // should now include color & emoji
+      setNotes((prev) => [res.data, ...prev]);
+      setShowNewNote(false);
+    } catch (err) {
+      console.error("Error adding note:", err);
+    }
+  };
 
   // Delete note
   const deleteNoteHandler = async (id: string) => {
@@ -52,34 +52,33 @@ const addNote = async (note: NewNote) => {
   };
 
   // Toggle pin
- const togglePinHandler = async (note: Note) => {
-  try {
-    // Send all fields, just toggle pinned
-    const updatedNote = await updateNote(note._id, {
-      ...note,
-      pinned: !note.pinned,
-    });
+  const togglePinHandler = async (note: Note) => {
+    try {
+      // Send all fields, just toggle pinned
+      const updatedNote = await updateNote(note._id, {
+        ...note,
+        pinned: !note.pinned,
+      });
 
-    // Update frontend with the full note from backend
-    setNotes(notes.map(n => n._id === note._id ? updatedNote.data : n));
-
-  } catch (err) {
-    console.error("Toggle pin error:", err);
-    alert("Failed to toggle pin");
-  }
-};
+      // Update frontend with the full note from backend
+      setNotes(notes.map((n) => (n._id === note._id ? updatedNote.data : n)));
+    } catch (err) {
+      console.error("Toggle pin error:", err);
+      alert("Failed to toggle pin");
+    }
+  };
 
   // Filtered and sorted notes for search
- const filteredNotes = notes
-  .filter((n) => {
-    const searchLower = search.toLowerCase();
-    return (
-      n.title.toLowerCase().includes(searchLower) ||
-      n.content.toLowerCase().includes(searchLower) ||
-      (n.tags && n.tags.some(tag => tag.toLowerCase().includes(searchLower)))
-    );
-  })
-  .sort((a, b) => (b.pinned === a.pinned ? 0 : b.pinned ? 1 : -1));
+  const filteredNotes = notes
+    .filter((n) => {
+      const searchLower = search.toLowerCase();
+      return (
+        n.title.toLowerCase().includes(searchLower) ||
+        n.content.toLowerCase().includes(searchLower) ||
+        (n.tags && n.tags.some((tag) => tag.toLowerCase().includes(searchLower)))
+      );
+    })
+    .sort((a, b) => (b.pinned === a.pinned ? 0 : b.pinned ? 1 : -1));
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -139,28 +138,26 @@ const addNote = async (note: NewNote) => {
           onCancel={() => setShowNewNote(false)}
         />
       )}
-      {/* <NewNoteCard
-  onSave={(note: NewNote) => addNote(note)}  // <-- pass the full note object from modal
-  onCancel={() => setShowNewNote(false)}
-/> */}
 
       {/* Notes */}
       <div className="w-full max-w-5xl mx-auto px-4 mb-10">
 
         {/* Pinned Notes */}
-        {notes.some(n => n.pinned) && (
+        {filteredNotes.some((n) => n.pinned) && (
           <>
             <h2 className="text-lg font-semibold text-pink-600 mb-4">Pinned</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-              {notes.filter(n => n.pinned).map(note => (
-                <NoteCard
-                  key={note._id}
-                  note={note}
-                  onDelete={deleteNoteHandler}
-                  onTogglePin={() => togglePinHandler(note)}
-                  onEdit={() => {}}
-                />
-              ))}
+              {filteredNotes
+                .filter((n) => n.pinned)
+                .map((note) => (
+                  <NoteCard
+                    key={note._id}
+                    note={note}
+                    onDelete={deleteNoteHandler}
+                    onTogglePin={() => togglePinHandler(note)}
+                    onEdit={() => {}}
+                  />
+                ))}
             </div>
           </>
         )}
@@ -168,17 +165,18 @@ const addNote = async (note: NewNote) => {
         {/* All Notes */}
         <h2 className="text-lg font-semibold text-pink-600 mb-4">All Notes</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {notes.filter(n => !n.pinned).map(note => (
-            <NoteCard
-              key={note._id}
-              note={note}
-              onDelete={deleteNoteHandler}
-              onTogglePin={() => togglePinHandler(note)}
-              onEdit={() => {}}
-            />
-          ))}
+          {filteredNotes
+            .filter((n) => !n.pinned)
+            .map((note) => (
+              <NoteCard
+                key={note._id}
+                note={note}
+                onDelete={deleteNoteHandler}
+                onTogglePin={() => togglePinHandler(note)}
+                onEdit={() => {}}
+              />
+            ))}
         </div>
-
       </div>
     </div>
   );
