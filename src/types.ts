@@ -7,8 +7,8 @@ export interface Note {
   pinned: boolean;
   tags: string[];
   text: string;
-  createdAt: string; // string from backend, can convert to Date in UI
-  updatedAt?: string; // optional updated date
+  createdAt: string;
+  updatedAt?: string; 
 }
 
 export interface NewNote {
@@ -19,4 +19,6 @@ export interface NewNote {
   pinned: boolean;
   tags: string[];
   text: string;
+  // createdAt: string; 
+  // updatedAt?: string;
 }

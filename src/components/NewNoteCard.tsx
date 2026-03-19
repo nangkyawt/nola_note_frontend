@@ -65,7 +65,7 @@ const NewNoteCard: React.FC<NewNoteCardProps> = ({ onSave, onCancel, initialNote
         <div className="relative mb-2">
           <span
             className="absolute left-2 top-1/2 -translate-y-1/2 text-2xl cursor-pointer"
-            onClick={() => setShowEmoji(!showEmoji)} // ✅ fixed
+            onClick={() => setShowEmoji(!showEmoji)}
           >
             {emoji}
           </span>

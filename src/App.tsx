@@ -8,19 +8,18 @@ import type { Note, NewNote } from "./types";
 import { getNotes, createNote, deleteNote, updateNote } from "./service/api";
 import Navbar from "./components/Navbar";
 import NoteIcon from "./assets/images/note.png";
-import {
-  SearchIcon,
-  HomeIcon,
-  PlusIcon,
-  UserIcon,
-  BookmarkIcon
-} from "@heroicons/react/outline";
+import { useNavigate, Routes, Route } from "react-router-dom";
+import CalendarPage from "./pages/CalendarPage";
+import { BrowserRouter } from "react-router-dom";
+
+import { SearchIcon, HomeIcon, PlusIcon, UserIcon, BookmarkIcon } from "@heroicons/react/outline";
 
 const App: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [showNewNote, setShowNewNote] = useState(false);
   const [search, setSearch] = useState("");
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -55,10 +54,7 @@ const App: React.FC = () => {
 
   const togglePinHandler = async (note: Note) => {
     try {
-      const updatedNote = await updateNote(note._id, {
-        ...note,
-        pinned: !note.pinned,
-      });
+      const updatedNote = await updateNote(note._id, { ...note, pinned: !note.pinned });
       setNotes(notes.map((n) => (n._id === note._id ? updatedNote.data : n)));
     } catch (err) {
       console.error(err);
@@ -76,168 +72,218 @@ const App: React.FC = () => {
     })
     .sort((a, b) => (b.pinned === a.pinned ? 0 : b.pinned ? 1 : -1));
 
+  // ✅ handleAddNoteWithDate to open modal for selected date
+  function handleAddNoteWithDate(date: string): void {
+    setEditingNote({
+      _id: "",
+      title: "",
+      content: "",
+      text: "",
+      color: "bg-pink-100",
+      emoji: "📝",
+      pinned: false,
+      tags: [],
+      createdAt: date,
+      updatedAt: date,
+    });
+    setShowNewNote(true);
+  }
+
   return (
-    <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 min-h-screen">
 
-      {/* Navbar (desktop only) */}
-      <div className="hidden sm:block">
-        <Navbar
-          onLogout={() => console.log("Logout")}
-          isLoggedIn={false}
-          username=""
-          onLogin={() => {}}
-        />
-      </div>
-
-      {/* Mobile Header */}
-      <div className="sm:hidden px-4 pt-6 pb-2 flex justify-between items-center">
-        <div>
-          <p className="text-gray-500 text-sm">Hello, Good Moring👋</p>
-          <h2 className="text-lg font-semibold text-pink-600">User</h2>
-        </div>
-
-        <div className="bg-pink-100 p-2 rounded-full">
-          <UserIcon className="w-5 h-5 text-pink-500" />
-        </div>
-      </div>
-
-      {/* Header */}
-      <div className="w-full max-w-5xl mx-auto mt-4 sm:mt-10 mb-6 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-
-        <div>
-          <h1 className="text-4xl font-bold text-pink-600 flex items-center gap-3" style={{ fontFamily: "Quicksand" }}>
-            <img src={NoteIcon} alt="note icon" className="w-8 h-8" />
-            MyNotes
-          </h1>
-
-          <p className="text-gray-500 text-sm mt-1">
-            {notes.length} {notes.length === 1 ? "note" : "notes"}
-          </p>
-        </div>
-
-        {/* Search */}
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative w-full sm:w-64">
-            <SearchIcon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search notes..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Floating button (desktop only) */}
-      <button
-        onClick={() => {
-          setEditingNote(null);
-          setShowNewNote(true);
-        }}
-        className="hidden sm:flex fixed bottom-6 right-6 px-5 py-3 bg-gradient-to-r from-pink-500 to-rose-400 text-white rounded-full shadow-xl hover:scale-105 active:scale-95 transition text-sm items-center gap-1 z-50"
-      >
-        + New
-      </button>
-
-      {/* New Note Modal */}
-      {showNewNote && (
-     <NewNoteCard
-  initialNote={editingNote ?? null}
-  onSave={(updatedNote) => {
-    if (editingNote) {
-     const edited = { ...editingNote, ...updatedNote, pinned: editingNote.pinned };
-      updateNote(edited._id, edited).then((res) => {
-        setNotes(notes.map(n => n._id === edited._id ? res.data : n));
-      });
-    } else {
-      addNote(updatedNote);
-    }
-    setShowNewNote(false);
-    setEditingNote(null);
-  }}
-  onCancel={() => {
-    setShowNewNote(false);
-    setEditingNote(null);
-  }}
-/>
-      )}
-
-      {/* Notes */}
-      <div className="w-full max-w-5xl mx-auto px-4 mb-10 pb-24">
-
-        {filteredNotes.some((n) => n.pinned) && (
-          <>
-            <h2 className="text-lg font-semibold text-pink-600 mb-4">Pinned</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-              {filteredNotes.filter((n) => n.pinned).map((note) => (
-                <NoteCard
-                  key={note._id}
-                  note={note}
-                  onDelete={deleteNoteHandler}
-                  onTogglePin={() => togglePinHandler(note)}
-                  onEdit={() => {
-                    setEditingNote(note);
-                    setShowNewNote(true);
-                  }}
-                />
-              ))}
+    <Routes>
+      {/* ================= NOTES PAGE ================= */}
+      <Route
+        path="/"
+        element={
+          <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 min-h-screen">
+            {/* Navbar (desktop only) */}
+            <div className="hidden sm:block">
+              <Navbar
+                onLogout={() => console.log("Logout")}
+                isLoggedIn={false}
+                username=""
+                onLogin={() => {}}
+              />
             </div>
-          </>
-        )}
 
-        <h2 className="text-lg font-semibold text-pink-600 mb-4">All Notes</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredNotes.filter((n) => !n.pinned).map((note) => (
-            <NoteCard
-              key={note._id}
-              note={note}
-              onDelete={deleteNoteHandler}
-              onTogglePin={() => togglePinHandler(note)}
-              onEdit={() => {
-                setEditingNote(note);
+            {/* Mobile Header */}
+            <div className="sm:hidden px-4 pt-6 pb-2 flex justify-between items-center">
+              <div>
+                <p className="text-gray-500 text-sm">Hello, Good Moring👋</p>
+                <h2 className="text-lg font-semibold text-pink-600">User</h2>
+              </div>
+              <div className="bg-pink-100 p-2 rounded-full">
+                <UserIcon className="w-5 h-5 text-pink-500" />
+              </div>
+            </div>
+
+            {/* Header */}
+            <div className="w-full max-w-5xl mx-auto mt-4 sm:mt-10 mb-6 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h1
+                  className="text-4xl font-bold text-pink-600 flex items-center gap-3"
+                  style={{ fontFamily: "Quicksand" }}
+                >
+                  <img src={NoteIcon} alt="note icon" className="w-8 h-8" />
+                  MyNotes
+                </h1>
+                <p className="text-gray-500 text-sm mt-1">
+                  {notes.length} {notes.length === 1 ? "note" : "notes"}
+                </p>
+              </div>
+
+              {/* Search */}
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="relative w-full sm:w-64">
+                  <SearchIcon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search notes..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Floating button (desktop only) */}
+            <button
+              onClick={() => {
+                setEditingNote(null);
                 setShowNewNote(true);
               }}
-            />
-          ))}
-        </div>
-      </div>
+              className="hidden sm:flex fixed bottom-6 right-6 px-5 py-3 bg-gradient-to-r from-pink-500 to-rose-400 text-white rounded-full shadow-xl hover:scale-105 active:scale-95 transition text-sm items-center gap-1 z-50"
+            >
+              + New
+            </button>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t shadow-lg flex justify-around items-center py-2 sm:hidden z-50">
+            {/* New Note Modal */}
+            {showNewNote && (
+              <NewNoteCard
+                initialNote={editingNote ?? null}
+                onSave={(updatedNote) => {
+                  if (editingNote) {
+                    const edited = { ...editingNote, ...updatedNote, pinned: editingNote.pinned };
+                    updateNote(edited._id, edited).then((res) => {
+                      setNotes(notes.map((n) => (n._id === edited._id ? res.data : n)));
+                    });
+                  } else {
+                    addNote(updatedNote);
+                  }
+                  setShowNewNote(false);
+                  setEditingNote(null);
+                }}
+                onCancel={() => {
+                  setShowNewNote(false);
+                  setEditingNote(null);
+                }}
+              />
+            )}
 
-        <button className="flex flex-col items-center text-pink-500">
-          <HomeIcon className="w-5 h-5" />
-          <span className="text-xs">Notes</span>
-        </button>
+            {/* Notes */}
+            <div className="w-full max-w-5xl mx-auto px-4 mb-10 pb-24">
+              {filteredNotes.some((n) => n.pinned) && (
+                <>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="px-3 py-1 bg-pink-200/40 backdrop-blur-md text-pink-600 font-semibold text-sm rounded-full shadow-sm">
+                      Pinned
+                    </span>
 
-        <button className="flex flex-col items-center text-gray-400 hover:text-pink-500 transition">
-          <SearchIcon className="w-5 h-5" />
-          <span className="text-xs">Search</span>
-        </button>
-    <button
-          onClick={() => {
-            setEditingNote(null);
-            setShowNewNote(true);
-          }}
-          className="bg-gradient-to-r from-pink-500 to-rose-400 p-3 rounded-full shadow-xl -mt-6"
-        >
-          <PlusIcon className="w-6 h-6 text-white" />
-        </button>
+                    {/* Calendar Button */}
+                 <button
+  onClick={() => navigate("calendar")} 
+  className="px-3 py-1 text-sm bg-white/30 rounded-full text-pink-600"
+>
+  📅 Calendar
+</button>
+                  </div>
 
-        <button className="flex flex-col items-center text-gray-400 hover:text-pink-500 transition">
-          <BookmarkIcon className="w-5 h-5" />
-          <span className="text-xs">Pinned</span>
-        </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    {filteredNotes
+                      .filter((n) => n.pinned)
+                      .map((note) => (
+                        <NoteCard
+                          key={note._id}
+                          note={note}
+                          onDelete={deleteNoteHandler}
+                          onTogglePin={() => togglePinHandler(note)}
+                          onEdit={() => {
+                            setEditingNote(note);
+                            setShowNewNote(true);
+                          }}
+                        />
+                      ))}
+                  </div>
+                </>
+              )}
 
-        <button className="flex flex-col items-center text-gray-400 hover:text-pink-500 transition">
-          <UserIcon className="w-5 h-5" />
-          <span className="text-xs">Me</span>
-        </button>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="px-3 py-1 bg-pink-200/40 backdrop-blur-md text-pink-600 font-semibold text-sm rounded-full shadow-sm">
+                  All Notes
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredNotes
+                  .filter((n) => !n.pinned)
+                  .map((note) => (
+                    <NoteCard
+                      key={note._id}
+                      note={note}
+                      onDelete={deleteNoteHandler}
+                      onTogglePin={() => togglePinHandler(note)}
+                      onEdit={() => {
+                        setEditingNote(note);
+                        setShowNewNote(true);
+                      }}
+                    />
+                  ))}
+              </div>
+            </div>
 
-      </div>
-    </div>
+            {/* Mobile Bottom Navigation */}
+            <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t shadow-lg flex justify-around items-center py-2 sm:hidden z-50">
+              <button className="flex flex-col items-center text-pink-500">
+                <HomeIcon className="w-5 h-5" />
+                <span className="text-xs">Notes</span>
+              </button>
+
+              <button className="flex flex-col items-center text-gray-400 hover:text-pink-500 transition">
+                <SearchIcon className="w-5 h-5" />
+                <span className="text-xs">Search</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setEditingNote(null);
+                  setShowNewNote(true);
+                }}
+                className="bg-gradient-to-r from-pink-500 to-rose-400 p-3 rounded-full shadow-xl -mt-6"
+              >
+                <PlusIcon className="w-6 h-6 text-white" />
+              </button>
+
+              <button className="flex flex-col items-center text-gray-400 hover:text-pink-500 transition">
+                <BookmarkIcon className="w-5 h-5" />
+                <span className="text-xs">Pinned</span>
+              </button>
+
+              <button className="flex flex-col items-center text-gray-400 hover:text-pink-500 transition">
+                <UserIcon className="w-5 h-5" />
+                <span className="text-xs">Me</span>
+              </button>
+            </div>
+          </div>
+        }
+      />
+
+      {/* ================= CALENDAR PAGE ================= */}
+      <Route
+        path="/calendar"
+        element={<CalendarPage notes={notes} onAddNoteWithDate={handleAddNoteWithDate} />}
+      />
+    </Routes>
   );
 };
 

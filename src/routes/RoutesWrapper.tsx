@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
@@ -14,10 +15,14 @@ const RoutesWrapper: React.FC = () => {
     <Routes>
       <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
       <Route path="/signup" element={<SignUpPage onSignUp={handleSignUp} />} />
+      
+      {/* ✅ Single /notes route with trailing * for nested routes */}
       <Route
-        path="/notes"
+        path="/notes/*"
         element={isLoggedIn ? <App /> : <Navigate to="/login" replace />}
       />
+
+      {/* Redirect all unknown paths */}
       <Route
         path="*"
         element={<Navigate to={isLoggedIn ? "/notes" : "/login"} replace />}
