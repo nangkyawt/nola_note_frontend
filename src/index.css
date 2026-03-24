@@ -5,3 +5,17 @@
 body{
   font-family: 'Roboto', sans-serif;
 }
+
+@layer utilities {
+  .animate-slide-fade {
+    @apply transition-transform duration-300 ease-out;
+    animation: slideFade 6s forwards;
+  }
+
+  @keyframes slideFade {
+    0% { opacity: 0; transform: translateY(-20px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
+  }
+}

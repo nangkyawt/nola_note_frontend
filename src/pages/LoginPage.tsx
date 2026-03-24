@@ -10,8 +10,8 @@ interface LoginPageProps {
   onLogin: () => void;
 }
 
-const ALLOWED_EMAIL = "nang@gmail.com";
-const ALLOWED_PASSWORD = "55555";
+// const ALLOWED_EMAIL = "nang@gmail.com";
+// const ALLOWED_PASSWORD = "55555";
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [email, setEmail] = useState("");
@@ -19,16 +19,36 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.toLowerCase() === ALLOWED_EMAIL && password === ALLOWED_PASSWORD) {
-      onLogin();
-      navigate("/notes");
-    } else {
-      setError("Invalid email or password!");
+  try {
+    const res = await fetch("http://localhost:5001/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.message || "Login failed");
+      return;
     }
-  };
+
+    // save token
+    localStorage.setItem("token", data.token);
+    console.log("Login successful, calling onLogin"); 
+    onLogin();
+    navigate("/"); // go to home page
+  } catch (err) {
+    console.error(err);
+    setError("Server error");
+  }
+};
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 via-pink-100 to-pink-300 overflow-hidden relative">
@@ -102,7 +122,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
         </div>
 
        {/* Social login icons - small buttons */}
-{/* Small square pink social buttons */}
  <div className="flex justify-center gap-4 mb-4">
   <button
     type="button"

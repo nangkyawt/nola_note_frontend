@@ -22,32 +22,60 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSignUp = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      setError("Passwords do not match!");
-      return;
-    }
-    if (!email || !password || !username) {
-      setError("All fields are required!");
+  // const handleSignUp = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (password !== confirmPassword) {
+  //     setError("Passwords do not match!");
+  //     return;
+  //   }
+  //   if (!email || !password || !username) {
+  //     setError("All fields are required!");
+  //     return;
+  //   }
+
+  //   // For now, just simulate sign up
+  //   onSignUp();
+  //   navigate("/notes");
+  // };
+
+const handleSignUp = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (password !== confirmPassword) {
+    setError("Passwords do not match!");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5001/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.message || "Signup failed");
       return;
     }
 
-    // For now, just simulate sign up
+    // Save token for future API requests
+    localStorage.setItem("token", data.token);
     onSignUp();
     navigate("/notes");
-  };
+  } catch (err) {
+    console.error(err);
+    setError("Server error");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 via-pink-100 to-pink-300 overflow-y-auto relative">
-      {/* Decorative floating circles */}
       <div className="absolute top-10 left-10 w-12 h-12 bg-pink-400 rounded-full opacity-40 animate-pulse hidden sm:block"></div>
       <div className="absolute bottom-20 right-20 w-16 h-16 bg-pink-500 rounded-full opacity-30 animate-pulse hidden sm:block"></div>
       <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-pink-300 rounded-full opacity-20 animate-ping hidden sm:block"></div>
 
       {/* Sign Up Card */}
       <div className="relative w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 flex flex-col items-center overflow-hidden">
-        {/* Title with note icon */}
        <h1 
   className="text-5xl font-extrabold text-pink-600 mb-4 flex items-center justify-center gap-2"
   style={{fontFamily:"Quicksand"}}
@@ -170,8 +198,6 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
             Login
           </a>
         </p>
-
-        {/* Decorative floating hearts */}
         <div className="absolute -top-10 -right-10 w-24 h-24 bg-pink-300 rounded-full opacity-20 animate-pulse hidden sm:block"></div>
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-pink-400 rounded-full opacity-20 animate-pulse hidden sm:block"></div>
       </div>
