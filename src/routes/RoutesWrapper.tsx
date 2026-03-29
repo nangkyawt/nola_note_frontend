@@ -7,8 +7,6 @@ import App from "../App";
 
 const RoutesWrapper: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Check token on mount
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("token"));
   }, []);
@@ -20,8 +18,6 @@ const RoutesWrapper: React.FC = () => {
     <Routes>
       <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
       <Route path="/signup" element={<SignUpPage onSignUp={handleSignUp} />} />
-
-      {/* Protected App routes */}
       <Route
         path="/notes/*"
         element={isLoggedIn ? <App /> : <Navigate to="/login" replace />}

@@ -8,11 +8,10 @@ import type { Note, NewNote } from "./types";
 import { getNotes, createNote, deleteNote, updateNote } from "./service/api";
 import Navbar from "./components/Navbar";
 import NoteIcon from "./assets/images/note.png";
-import { useNavigate, Routes, Route } from "react-router-dom";
+import { useNavigate, Routes, Route ,  useLocation} from "react-router-dom";
 import CalendarPage from "./pages/CalendarPage";
 import Toast from "./components/Toast"; 
 import LoginPage from "./pages/LoginPage";
-
 import { SearchIcon, HomeIcon, PlusIcon, UserIcon, BookmarkIcon } from "@heroicons/react/outline";
 
 const App: React.FC = () => {
@@ -21,6 +20,7 @@ const App: React.FC = () => {
   const [search, setSearch] = useState("");
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // ADD TOP-LEVEL TOAST 
   const [toastMessage, setToastMessage] = useState("");
@@ -31,7 +31,13 @@ const App: React.FC = () => {
     setToastMessage(message);
     setToastType(type);
   };
-
+// Show toast if navigation state has message
+useEffect(() => {
+  if (location.state?.toastMessage) {
+    showToast(location.state.toastMessage, location.state.toastType || "success");
+    window.history.replaceState({}, document.title); 
+  }
+}, [location.state]);
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -102,7 +108,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      {/* TOP-LEVEL TOAST */}
+      {/* TOP-LEVEL TOAST n*/}
       {toastMessage && (
         <Toast
           message={toastMessage}
@@ -112,7 +118,7 @@ const App: React.FC = () => {
       )}
 
       <Routes>
-        {/* ================= LOGIN PAGE ================= */}
+        {/*  LOGIN PAGE*/}
         <Route
           path="/login"
           element={
@@ -125,7 +131,7 @@ const App: React.FC = () => {
           }
         />
 
-        {/* ================= NOTES PAGE ================= */}
+        {/* NOTES PAGE */}
         <Route
           path="/"
           element={

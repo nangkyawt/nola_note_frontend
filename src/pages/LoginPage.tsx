@@ -10,9 +10,6 @@ interface LoginPageProps {
   onLogin: () => void;
 }
 
-// const ALLOWED_EMAIL = "nang@gmail.com";
-// const ALLOWED_PASSWORD = "55555";
-
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,8 +38,10 @@ const handleLogin = async (e: React.FormEvent) => {
     // save token
     localStorage.setItem("token", data.token);
     console.log("Login successful, calling onLogin"); 
-    onLogin();
-    navigate("/"); // go to home page
+onLogin();
+navigate("/notes", { 
+  state: { toastMessage: "Logged in successfully!", toastType: "success" } 
+});
   } catch (err) {
     console.error(err);
     setError("Server error");
@@ -52,7 +51,6 @@ const handleLogin = async (e: React.FormEvent) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 via-pink-100 to-pink-300 overflow-hidden relative">
-      {/* Floating decorative hearts */}
       <div className="absolute top-10 left-10 w-12 h-12 bg-pink-400 rounded-full opacity-40 animate-pulse"></div>
       <div className="absolute bottom-20 right-20 w-16 h-16 bg-pink-500 rounded-full opacity-30 animate-pulse"></div>
       <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-pink-300 rounded-full opacity-20 animate-ping"></div>
@@ -146,7 +144,7 @@ const handleLogin = async (e: React.FormEvent) => {
           </Link>
         </p>
 
-        {/* More decorative hearts */}
+
         <div className="absolute -top-10 -right-10 w-24 h-24 bg-pink-300 rounded-full opacity-20 animate-pulse"></div>
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-pink-400 rounded-full opacity-20 animate-pulse"></div>
       </div>

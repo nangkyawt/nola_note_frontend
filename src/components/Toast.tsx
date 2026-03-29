@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// src/components/Toast.tsx
 import React, { useEffect } from "react";
 
 interface ToastProps {
@@ -11,8 +10,7 @@ interface ToastProps {
 // Toast Component
 const Toast: React.FC<ToastProps> = ({ message, type = "success", onClose }) => {
   useEffect(() => {
-    const timer = setTimeout(() => onClose(), 6000); // auto dismiss after 6s
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => onClose(), 3000); 
   }, [onClose]);
 
   const bgColor =
@@ -44,9 +42,9 @@ const Toast: React.FC<ToastProps> = ({ message, type = "success", onClose }) => 
     );
 
   return (
-    <div
-      className={`fixed top-6 right-6 flex items-center w-full max-w-sm p-4 rounded shadow-lg border z-50 ${bgColor}`}
-    >
+   <div
+  className={`fixed top-20 right-6 flex items-center w-full max-w-sm p-4 rounded shadow-lg border z-[9999] ${bgColor}`}
+>
       <div className="flex-shrink-0 w-7 h-7 flex items-center justify-center">{icon}</div>
       <div className="ml-3 text-sm font-normal">{message}</div>
       <button
