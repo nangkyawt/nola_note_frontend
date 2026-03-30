@@ -1,16 +1,45 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SearchIcon, BellIcon } from "@heroicons/react/outline";
 
 interface NavbarProps {
-  username: string;
-  isLoggedIn: boolean;
+ username: string;
+  isLoggedIn: boolean; // add this line
   onLogin: () => void;
   onLogout: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({ onLogin, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
+
+  // Load username from localStorage and listen for updates
+useEffect(() => {
+  const loadUser = () => {
+    const storedUser = localStorage.getItem("user");
+    console.log("Navbar reads user:", storedUser);
+    if (storedUser) {
+      const userObj = JSON.parse(storedUser);
+      setUsername(userObj.username);
+    } else {
+      setUsername(null);
+    }
+  };
+
+  loadUser();
+  window.addEventListener("userChange", loadUser);
+
+  return () => window.removeEventListener("userChange", loadUser);
+}, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setUsername(null);
+    onLogout();
+  };
+
+  const isLoggedIn = !!username;
 
   return (
     <nav className="w-full bg-pink-500 text-white shadow sticky top-0 z-50">
@@ -20,20 +49,12 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
           {/* Profile + Greeting */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white text-pink-500 flex items-center justify-center font-bold shadow">
-              {username[0]?.toUpperCase() || "U"}
+              {username ? username[0].toUpperCase() : "U"}
             </div>
-            <span className="font-medium text-white text-sm">Hi, {username || "User"}</span>
+            <span className="font-medium text-white text-sm">
+              Hi, {username || "User"}
+            </span>
           </div>
-
-          {/* Search */}
-          {/* <div className="flex items-center bg-white rounded-full px-3 py-1 shadow-sm w-64">
-            <SearchIcon className="w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="bg-transparent focus:outline-none text-gray-700 text-sm ml-2 w-full"
-            />
-          </div> */}
 
           {/* Actions */}
           <div className="flex items-center gap-4">
@@ -46,7 +67,7 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
             {/* Login/Logout */}
             {isLoggedIn ? (
               <button
-                onClick={onLogout}
+                onClick={handleLogout}
                 className="px-4 py-2 rounded-lg bg-white text-pink-500 font-semibold hover:bg-pink-50 hover:shadow transition"
               >
                 Logout
@@ -67,9 +88,11 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
           {/* Profile */}
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full bg-white text-pink-500 flex items-center justify-center font-bold shadow">
-              {username[0]?.toUpperCase() || "U"}
+              {username ? username[0].toUpperCase() : "U"}
             </div>
-            <span className="text-white font-medium text-sm">Hi, {username || "User"}</span>
+            <span className="text-white font-medium text-sm">
+              Hi, {username || "User"}
+            </span>
           </div>
 
           {/* Icons & Hamburger */}
@@ -115,7 +138,7 @@ const Navbar: React.FC<NavbarProps> = ({ username, isLoggedIn, onLogin, onLogout
           <div className="md:hidden mt-2 flex flex-col gap-2 pb-2 bg-pink-500 rounded-lg shadow-md">
             {isLoggedIn ? (
               <button
-                onClick={onLogout}
+                onClick={handleLogout}
                 className="w-full px-4 py-2 rounded-lg bg-white text-pink-500 font-semibold hover:bg-pink-50 hover:shadow transition"
               >
                 Logout

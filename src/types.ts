@@ -19,6 +19,4 @@ export interface NewNote {
   pinned: boolean;
   tags: string[];
   text: string;
-  // createdAt: string; 
-  // updatedAt?: string;
 }
