@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/set-state-in-effect */
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
 import SignUpPage from "../pages/SignUpPage";
