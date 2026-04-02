@@ -104,24 +104,40 @@ const App: React.FC = () => {
     }
   };
 
-  const togglePinHandler = async (note: Note) => {
-    try {
-      const updatedNote = await updateNote(note._id, { ...note, pinned: !note.pinned });
-      setNotes(notes.map((n) => (n._id === note._id ? updatedNote.data : n)));
-      showToast(note.pinned ? "Note unpinned!" : "Note pinned!", "success");
-    } catch (err) {
-      console.error(err);
-      showToast("Failed to update note.", "error");
-    }
-  };
+  // const togglePinHandler = async (note: Note) => {
+  //   try {
+  //     const updatedNote = await updateNote(note._id, { ...note, pinned: !note.pinned });
+  //     setNotes(notes.map((n) => (n._id === note._id ? updatedNote.data : n)));
+  //     showToast(note.pinned ? "Note unpinned!" : "Note pinned!", "success");
+  //   } catch (err) {
+  //     console.error(err);
+  //     showToast("Failed to update note.", "error");
+  //   }
+  // };
+const togglePinHandler = async (note: Note) => {
+  try {
+    const message = note.pinned ? "Note unpinned!" : "Note pinned!";
+    const res = await updateNote(note._id, { ...note, pinned: !note.pinned });
+    setNotes(prevNotes => 
+      prevNotes.map((n) => (n._id === note._id ? res.data : n))
+    );
+    showToast(message, "success");
+    
+  } catch (err) {
+    console.error("Update error:", err);
+    showToast("Failed to update note.", "error");
+  }
+};
 
   const filteredNotes = notes
     .filter((n) => {
+      
       const searchLower = search.toLowerCase();
       return (
         n.title.toLowerCase().includes(searchLower) ||
         n.content.toLowerCase().includes(searchLower) ||
         (n.tags && n.tags.some((tag) => tag.toLowerCase().includes(searchLower)))
+        
       );
     })
     .sort((a, b) => (b.pinned === a.pinned ? 0 : b.pinned ? 1 : -1));
@@ -200,7 +216,7 @@ const App: React.FC = () => {
                     <img src={NoteIcon} alt="note icon" className="w-8 h-8" />
                     MyNotes
                   </h1>
-                  <p className="text-gray-500 text-sm mt-1">
+                  <p className= "text-pink-600 text-sm mt-1">
                     {notes.length} {notes.length === 1 ? "note" : "notes"}
                   </p>
                 </div>
@@ -229,27 +245,35 @@ const App: React.FC = () => {
                 + New
               </button>
 
-              {showNewNote && (
-                <NewNoteCard
-                  initialNote={editingNote ?? null}
-                  onSave={(updatedNote) => {
-                    if (editingNote && editingNote._id) {
-                      const edited = { ...editingNote, ...updatedNote, pinned: editingNote.pinned };
-                      updateNote(edited._id, edited).then((res) => {
-                        setNotes(notes.map((n) => (n._id === edited._id ? res.data : n)));
-                      });
-                    } else {
-                      addNote(updatedNote);
-                    }
-                    setShowNewNote(false);
-                    setEditingNote(null);
-                  }}
-                  onCancel={() => {
-                    setShowNewNote(false);
-                    setEditingNote(null);
-                  }}
-                />
-              )}
+             {showNewNote && (
+  <NewNoteCard
+    initialNote={editingNote ?? null}
+    onSave={(updatedNote) => {
+      if (editingNote && editingNote._id) {
+        const edited = { ...editingNote, ...updatedNote, pinned: editingNote.pinned };
+        
+        updateNote(edited._id, edited).then((res) => {
+          setNotes(notes.map((n) => (n._id === edited._id ? res.data : n)));
+                showToast("Note updated successfully!", "success");
+        }).catch((err) => {
+          console.error(err);
+          showToast("Failed to update note.", "error");
+        });
+
+      } else {
+
+        addNote(updatedNote); 
+      }
+      
+      setShowNewNote(false);
+      setEditingNote(null);
+    }}
+    onCancel={() => {
+      setShowNewNote(false);
+      setEditingNote(null);
+    }}
+  />
+)}
 
               <div className="w-full max-w-5xl mx-auto px-4 mb-10 pb-24">
                 {filteredNotes.some((n) => n.pinned) && (

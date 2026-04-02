@@ -17,6 +17,9 @@ const colors = [
   "bg-green-100",
   "bg-blue-100",
   "bg-purple-100",
+  // "bg-orange-100",
+  // "bg-rose-100",
+  "bg-amber-50"
 ];
 const emojis = ["📝", "💡", "⭐", "💖", "📌"];
 
@@ -27,7 +30,7 @@ const NewNoteCard: React.FC<NewNoteCardProps> = ({ onSave, onCancel, initialNote
   const [color, setColor] = useState(initialNote?.color || colors[0]);
   const [emoji, setEmoji] = useState(initialNote?.emoji || emojis[0]);
   const [tags, setTags] = useState(initialNote?.tags?.join(",") || "");
-  const [showEmoji, setShowEmoji] = useState(false); // ✅ added
+  const [showEmoji, setShowEmoji] = useState(false);
 
   const handleSave = () => {
     if (!title.trim() && !content.trim()) return;
@@ -86,7 +89,7 @@ const NewNoteCard: React.FC<NewNoteCardProps> = ({ onSave, onCancel, initialNote
                   key={e}
                   onClick={() => {
                     setEmoji(e);
-                    setShowEmoji(false); // ✅ fixed
+                    setShowEmoji(false); 
                   }}
                   className={`text-lg ${emoji === e ? "scale-125" : ""} hover:scale-125 transition-transform`}
                 >

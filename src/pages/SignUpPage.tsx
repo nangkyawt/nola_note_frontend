@@ -46,23 +46,22 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
 
       if (!res.ok) {
         setError(data.message || "Signup failed");
-        showToast(data.message || "Signup failed", "error"); // Show toast on API error
+        showToast(data.message || "Signup failed", "error");
         return;
       }
 
-      // Save token for future API requests
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      window.dispatchEvent(new Event("userChange"));
 
-// window.dispatchEvent(new Event("storage"));
-window.dispatchEvent(new Event("userChange"));
       onSignUp();
-     showToast("Signup successful!", "success"); 
-setTimeout(() => {
-  navigate("/notes", { 
-  state: { toastMessage: "Signup successful!", toastType: "success" } 
-});
-}); 
+      showToast("Signup successful!", "success");
+
+      setTimeout(() => {
+        navigate("/notes", { 
+          state: { toastMessage: "Signup successful!", toastType: "success" } 
+        });
+      }); 
     } catch (err) {
       console.error(err);
       setError("Server error");
@@ -72,22 +71,24 @@ setTimeout(() => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 via-pink-100 to-pink-300 overflow-y-auto relative">
-     {toastMessage && (
-  <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50">
-    <Toast
-      message={toastMessage}
-      type={toastType}
-      onClose={() => setToastMessage("")}
-    />
-  </div>
-)}
+      {toastMessage && (
+        <div className="fixed top-5 right-5 z-50">
+          <Toast
+            message={toastMessage}
+            type={toastType}
+            onClose={() => setToastMessage("")}
+          />
+        </div>
+      )}
 
+      {/* Background Circles */}
       <div className="absolute top-10 left-10 w-12 h-12 bg-pink-400 rounded-full opacity-40 animate-pulse hidden sm:block"></div>
       <div className="absolute bottom-20 right-20 w-16 h-16 bg-pink-500 rounded-full opacity-30 animate-pulse hidden sm:block"></div>
       <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-pink-300 rounded-full opacity-20 animate-ping hidden sm:block"></div>
 
       {/* Sign Up Card */}
-      <div className="relative w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 flex flex-col items-center overflow-hidden">
+      <div className="relative w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-5 sm:p-8 flex flex-col items-center overflow-hidden">
+
         <h1 
           className="text-5xl font-extrabold text-pink-600 mb-4 flex items-center justify-center gap-2"
           style={{fontFamily:"Quicksand"}}
@@ -97,7 +98,9 @@ setTimeout(() => {
         </h1>
         <p className="text-center text-pink-400 mb-4 text-sm sm:text-base">Create your magical note account ✨</p>
 
-        <form onSubmit={handleSignUp} className="w-full flex flex-col gap-3 sm:gap-5">
+        {/* Form */}
+        <form onSubmit={handleSignUp} className="w-full flex flex-col gap-3 sm:gap-4">
+
           {/* Username */}
           <div className="relative">
             <UserIcon className="w-5 h-5 text-pink-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -124,7 +127,7 @@ setTimeout(() => {
             />
           </div>
 
-     
+          {/* Password */}
           <div className="relative">
             <LockClosedIcon className="w-5 h-5 text-pink-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -144,7 +147,7 @@ setTimeout(() => {
             </button>
           </div>
 
-   
+          {/* Confirm Password */}
           <div className="relative">
             <LockClosedIcon className="w-5 h-5 text-pink-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -176,10 +179,9 @@ setTimeout(() => {
           </button>
         </form>
 
-
         <div className="flex items-center my-3 sm:my-4 w-full">
           <hr className="flex-grow border-pink-300" />
-          <span className="mx-2 text-pink-400 text-sm">or SignUp with</span>
+          <span className="mx-2 text-pink-400 text-sm">or sign up with</span>
           <hr className="flex-grow border-pink-300" />
         </div>
 
@@ -209,8 +211,11 @@ setTimeout(() => {
             Login
           </a>
         </p>
-        <div className="absolute -top-10 -right-10 w-24 h-24 bg-pink-300 rounded-full opacity-20 animate-pulse hidden sm:block"></div>
-        <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-pink-400 rounded-full opacity-20 animate-pulse hidden sm:block"></div>
+
+
+        <div className="absolute -top-10 -right-10 w-24 h-24 bg-pink-300 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-pink-400 rounded-full opacity-20 animate-pulse"></div>
+
       </div>
     </div>
   );

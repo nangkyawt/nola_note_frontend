@@ -16,43 +16,52 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
 
-  try {
-    const res = await fetch("http://localhost:5001/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const data = await res.json();
+    try {
+      const res = await fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!res.ok) {
-      setError(data.message || "Login failed");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Login failed");
+        return;
+      }
+
+      // Save token and user info
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("auth", JSON.stringify({ token: data.token, user: data.user }));
+
+      // Fire storage event in case other components are listening
+      window.dispatchEvent(new Event("storage"));
+
+      console.log("Login successful, navigating to /notes with toast");
+
+      // 🔹 FIRST navigate with toast state
+      navigate("/notes", {
+        state: {
+          toastMessage: "Welcome Back! Logged in successfully!",
+          toastType: "success",
+        },
+      });
+
+      // 🔹 THEN update auth state
+      onLogin();
+
+    } catch (err) {
+      console.error(err);
+      setError("Server error");
     }
-
-    // save token notes by each user 
-localStorage.setItem("token", data.token);
-console.log("Backend response:", data); 
-localStorage.setItem("user", JSON.stringify(data.user));window.dispatchEvent(new Event("storage"));
-console.log("Login successful, calling onLogin"); 
-
-localStorage.setItem("auth", JSON.stringify({ token: data.token, user: data.user }));
-
-onLogin();
-navigate("/notes", { 
-  state: { toastMessage: "Logged in successfully!", toastType: "success" } 
-});
-  } catch (err) {
-    console.error(err);
-    setError("Server error");
-  }
-};
-  
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 via-pink-100 to-pink-300 overflow-hidden relative">
@@ -62,13 +71,13 @@ navigate("/notes", {
 
       {/* Login Card */}
       <div className="relative w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 flex flex-col items-center overflow-hidden">
-  <h1 
-  className="text-5xl font-extrabold text-pink-600 mb-4 flex items-center justify-center gap-2"
-  style={{fontFamily:"Quicksand"}}
->
-  <img src={NoteIcon} alt="note" className="w-10 h-10" />
-  Nola
-</h1>
+        <h1 
+          className="text-5xl font-extrabold text-pink-600 mb-4 flex items-center justify-center gap-2"
+          style={{fontFamily:"Quicksand"}}
+        >
+          <img src={NoteIcon} alt="note" className="w-10 h-10" />
+          Nola
+        </h1>
         <p className="text-center text-pink-400 mb-8">Your magical note world ✨</p>
 
         <form onSubmit={handleLogin} className="w-full flex flex-col gap-5">
@@ -124,23 +133,23 @@ navigate("/notes", {
           <hr className="flex-grow border-pink-300" />
         </div>
 
-       {/* Social login icons - small buttons */}
- <div className="flex justify-center gap-4 mb-4">
-  <button
-    type="button"
-    className="w-10 h-10 p-1 rounded-full border border-pink-300 hover:shadow-md transition-transform transform hover:scale-110"
-    onClick={() => alert("Google login coming soon!")}
-  >
-    <img src={GoogleIcon} alt="Google login" className="w-full h-full object-contain" />
-  </button>
-  <button
-    type="button"
-    className="w-10 h-10 p-1 rounded-full border border-pink-300 hover:shadow-md transition-transform transform hover:scale-110"
-    onClick={() => alert("Facebook login coming soon!")}
-  >
-    <img src={FacebookIcon} alt="Facebook login" className="w-full h-full object-contain" />
-  </button>
-</div>
+        {/* Social login icons - small buttons */}
+        <div className="flex justify-center gap-4 mb-4">
+          <button
+            type="button"
+            className="w-10 h-10 p-1 rounded-full border border-pink-300 hover:shadow-md transition-transform transform hover:scale-110"
+            onClick={() => alert("Google login coming soon!")}
+          >
+            <img src={GoogleIcon} alt="Google login" className="w-full h-full object-contain" />
+          </button>
+          <button
+            type="button"
+            className="w-10 h-10 p-1 rounded-full border border-pink-300 hover:shadow-md transition-transform transform hover:scale-110"
+            onClick={() => alert("Facebook login coming soon!")}
+          >
+            <img src={FacebookIcon} alt="Facebook login" className="w-full h-full object-contain" />
+          </button>
+        </div>
 
         <p className="text-center text-pink-400 mt-6 text-sm">
           Don't have an account?{" "}
@@ -148,7 +157,6 @@ navigate("/notes", {
             Sign Up
           </Link>
         </p>
-
 
         <div className="absolute -top-10 -right-10 w-24 h-24 bg-pink-300 rounded-full opacity-20 animate-pulse"></div>
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-pink-400 rounded-full opacity-20 animate-pulse"></div>

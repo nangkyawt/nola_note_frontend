@@ -21,11 +21,11 @@ const NoteCard: React.FC<NoteCardProps> = ({
       className={`relative p-4 sm:p-5 rounded-2xl shadow-lg flex flex-col transition-transform duration-300 hover:shadow-2xl hover:scale-105 ${note.color || "bg-white"}`}
     >
       {/* Pinned badge */}
-      {note.pinned && (
+      {/* {note.pinned && (
         <span className="absolute top-2 right-2 text-yellow-400 text-xl drop-shadow-md">
           📌
         </span>
-      )}
+      )} */}
 
       {/* Title + Emoji + Actions */}
       <div className="flex justify-between items-start mb-3">
@@ -43,8 +43,11 @@ const NoteCard: React.FC<NoteCardProps> = ({
     onClick={() => onTogglePin(note)}
     className="bg-white/30 p-1 rounded-full shadow hover:bg-yellow-200 transition-transform hover:scale-110"
   >
-    {note.pinned ? "📌" : "📍"}
+    {note.pinned ? "⭐" : "☆"}
+     
   </button>
+
+
 
   {/* Edit icon */}
   <button
@@ -84,9 +87,15 @@ const NoteCard: React.FC<NoteCardProps> = ({
         </div>
 
         {/* Time & Date */}
-        <span className="italic text-gray-400">
-          {new Date(note.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} • {new Date(note.createdAt).toLocaleDateString([], { month: "short", day: "numeric" })}
-        </span>
+<span className="italic text-pink-500 font-medium">
+  {new Date(note.updatedAt || note.createdAt).toLocaleTimeString([], { 
+    hour: "2-digit", 
+    minute: "2-digit" 
+  })} • {new Date(note.updatedAt || note.createdAt).toLocaleDateString([], { 
+    month: "short", 
+    day: "numeric" 
+  })}
+</span>
       </div>
     </div>
   );
