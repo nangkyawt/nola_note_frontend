@@ -28,46 +28,54 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
     setToastType(type);
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      setError("Passwords do not match!");
-      showToast("Passwords do not match!", "error");
+const handleSignUp = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // Gmail validation
+  if (!email.toLowerCase().endsWith("@gmail.com")) {
+    setError("Please enter a valid Gmail address!");
+    showToast("Please enter a valid Gmail address!", "error");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    setError("Passwords do not match!");
+    showToast("Passwords do not match!", "error");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5001/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({ username, email, password, confirmPassword }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.message || "Signup failed");
+      showToast(data.message || "Signup failed", "error");
       return;
     }
 
-    try {
-      const res = await fetch("http://localhost:5001/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    window.dispatchEvent(new Event("userChange"));
+
+    onSignUp();
+    showToast("Signup successful!", "success");
+
+    setTimeout(() => {
+      navigate("/notes", { 
+        state: { toastMessage: "Signup successful!", toastType: "success" } 
       });
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Signup failed");
-        showToast(data.message || "Signup failed", "error");
-        return;
-      }
-
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      window.dispatchEvent(new Event("userChange"));
-
-      onSignUp();
-      showToast("Signup successful!", "success");
-
-      setTimeout(() => {
-        navigate("/notes", { 
-          state: { toastMessage: "Signup successful!", toastType: "success" } 
-        });
-      }); 
-    } catch (err) {
-      console.error(err);
-      setError("Server error");
-      showToast("Server error", "error"); 
-    }
-  };
+    }); 
+  } catch (err) {
+    console.error(err);
+    setError("Server error");
+    showToast("Server error", "error"); 
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 via-pink-100 to-pink-300 overflow-y-auto relative">
@@ -88,7 +96,6 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
 
       {/* Sign Up Card */}
       <div className="relative w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-5 sm:p-8 flex flex-col items-center overflow-hidden">
-
         <h1 
           className="text-5xl font-extrabold text-pink-600 mb-4 flex items-center justify-center gap-2"
           style={{fontFamily:"Quicksand"}}
@@ -98,9 +105,7 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
         </h1>
         <p className="text-center text-pink-400 mb-4 text-sm sm:text-base">Create your magical note account ✨</p>
 
-        {/* Form */}
         <form onSubmit={handleSignUp} className="w-full flex flex-col gap-3 sm:gap-4">
-
           {/* Username */}
           <div className="relative">
             <UserIcon className="w-5 h-5 text-pink-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -132,10 +137,12 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
             <LockClosedIcon className="w-5 h-5 text-pink-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type={showPassword ? "text" : "password"}
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Password"
+              autoComplete="new-password"
               className="w-full pl-10 pr-12 p-4 border border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition placeholder-pink-300"
             />
             <button
@@ -152,10 +159,12 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
             <LockClosedIcon className="w-5 h-5 text-pink-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type={showConfirm ? "text" : "password"}
+              name="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               placeholder="Confirm Password"
+              autoComplete="new-password"
               className="w-full pl-10 pr-12 p-4 border border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition placeholder-pink-300"
             />
             <button
@@ -167,9 +176,7 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
             </button>
           </div>
 
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
             type="submit"
@@ -212,10 +219,8 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
           </a>
         </p>
 
-
         <div className="absolute -top-10 -right-10 w-24 h-24 bg-pink-300 rounded-full opacity-20 animate-pulse"></div>
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-pink-400 rounded-full opacity-20 animate-pulse"></div>
-
       </div>
     </div>
   );

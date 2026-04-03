@@ -17,11 +17,13 @@ const colors = [
   "bg-green-100",
   "bg-blue-100",
   "bg-purple-100",
+  "bg-sky-200",
+  "bg-cyan-100", 
   // "bg-orange-100",
   // "bg-rose-100",
-  "bg-amber-50"
+   "bg-amber-50"
 ];
-const emojis = ["📝", "💡", "⭐", "💖", "📌"];
+const emojis = ["📝", "💡", "⭐", "💖", "🛒"];
 
 const NewNoteCard: React.FC<NewNoteCardProps> = ({ onSave, onCancel, initialNote }) => {
 

@@ -97,14 +97,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           {/* Password */}
           <div className="relative">
             <LockClosedIcon className="w-5 h-5 text-pink-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Password"
-              className="w-full pl-10 pr-12 p-4 border border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition placeholder-pink-300"
-            />
+          <input
+          type={showPassword ? "text" : "password"}
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          placeholder="Password"
+          autoComplete="current-password"
+          className="w-full pl-10 pr-12 p-4 border border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition placeholder-pink-300"
+          />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}

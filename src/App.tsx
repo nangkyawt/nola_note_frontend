@@ -199,7 +199,7 @@ const togglePinHandler = async (note: Note) => {
 
               <div className="sm:hidden px-4 pt-6 pb-2 flex justify-between items-center">
                 <div>
-                  <p className="text-gray-500 text-sm">Hello, Good Morning👋</p>
+                  <p className="text-gray-500 text-sm">Hello 👋</p>
                   <h2 className="text-lg font-semibold text-pink-600"> {username || "User"}</h2>  
                 </div>
                 <div className="bg-pink-100 p-2 rounded-full">
