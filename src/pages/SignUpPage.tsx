@@ -31,16 +31,40 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ onSignUp }) => {
 const handleSignUp = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  // Gmail validation
-  if (!email.toLowerCase().endsWith("@gmail.com")) {
-    setError("Please enter a valid Gmail address!");
-    showToast("Please enter a valid Gmail address!", "error");
-    return;
+  // for username
+  const usernameRegex = /^[A-Za-z\s]+$/;
+  if (!usernameRegex.test(username)) {
+  setError("Username must contain only letters!");
+  showToast("Username must contain only letters!", "error");
+  return;
   }
 
+  // Gmail validation
+  const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+  if (!gmailRegex.test(email)) {
+  setError("Please enter a valid Gmail address!");
+  showToast("Please enter a valid Gmail address!", "error");
+  return;
+  }
+
+  // Password match
   if (password !== confirmPassword) {
     setError("Passwords do not match!");
     showToast("Passwords do not match!", "error");
+    return;
+  }
+
+  // Password length
+  if (password.length < 6) {
+    setError("Password must be at least 6 characters!");
+    showToast("Password must be at least 6 characters!", "error");
+    return;
+  }
+
+  const passwordRegex = /^[A-Za-z0-9]+$/;
+  if (!passwordRegex.test(password)) {
+    setError("Password can only contain letters and numbers!");
+    showToast("Password can only contain letters and numbers!", "error");
     return;
   }
 
@@ -48,8 +72,9 @@ const handleSignUp = async (e: React.FormEvent) => {
     const res = await fetch("http://localhost:5001/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({ username, email, password, confirmPassword }),
+      body: JSON.stringify({ username, email, password, confirmPassword }),
     });
+
     const data = await res.json();
 
     if (!res.ok) {
@@ -66,14 +91,14 @@ const handleSignUp = async (e: React.FormEvent) => {
     showToast("Signup successful!", "success");
 
     setTimeout(() => {
-      navigate("/notes", { 
-        state: { toastMessage: "Signup successful!", toastType: "success" } 
+      navigate("/notes", {
+        state: { toastMessage: "Signup successful!", toastType: "success" }
       });
-    }); 
+    });
   } catch (err) {
     console.error(err);
     setError("Server error");
-    showToast("Server error", "error"); 
+    showToast("Server error", "error");
   }
 };
 
