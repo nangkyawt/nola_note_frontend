@@ -78,7 +78,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           <img src={NoteIcon} alt="note" className="w-10 h-10" />
           Nola
         </h1>
-        <p className="text-center text-pink-400 mb-8">Your magical note world ✨</p>
+        <p className="text-center text-pink-400 mb-8">Your magical note world</p>
 
         <form onSubmit={handleLogin} className="w-full flex flex-col gap-5">
           {/* Email */}

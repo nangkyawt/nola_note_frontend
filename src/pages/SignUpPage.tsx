@@ -128,7 +128,7 @@ const handleSignUp = async (e: React.FormEvent) => {
           <img src={NoteIcon} alt="note" className="w-10 h-10" />
           Nola
         </h1>
-        <p className="text-center text-pink-400 mb-4 text-sm sm:text-base">Create your magical note account ✨</p>
+        <p className="text-center text-pink-400 mb-4 text-sm sm:text-base">Create your magical note account</p>
 
         <form onSubmit={handleSignUp} className="w-full flex flex-col gap-3 sm:gap-4">
           {/* Username */}
